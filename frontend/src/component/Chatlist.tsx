@@ -17,6 +17,7 @@ const chats: Chat[] = [
 
 const Chatlist: React.FC = () => {
   return (
+    <div className="sm:ml-14">
     <div className="flex flex-col w-64 bg-gray-900">
       {/* Search Bar */}
       <div className="p-4">
@@ -58,6 +59,7 @@ const Chatlist: React.FC = () => {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 };
