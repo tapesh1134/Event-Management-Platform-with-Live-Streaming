@@ -1,12 +1,15 @@
-// Import necessary dependencies
+// Login.js
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [loginData, setLoginData] = useState({
     email: '',
     password: ''
   });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -21,10 +24,23 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateLogin()) {
-      console.log('Logged in successfully', loginData);
+      setLoading(true);
+      try {
+        const response = await axios.post('http://localhost:5000/login', loginData);
+        alert('Login successful');
+        onLogin(response.data.user);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        if (err.response && err.response.data) {
+          setErrors({ api: err.response.data.error });
+        } else {
+          setErrors({ api: 'An unexpected error occurred' });
+        }
+      }
     }
   };
 
@@ -45,24 +61,32 @@ const Login = () => {
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
-
           <div className="mb-4">
             <label className="block text-gray-300 font-medium mb-2" htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={loginData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-700 bg-gray-700 text-gray-100'}`}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={loginData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-700 bg-gray-700 text-gray-100'}`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-2 text-gray-500">
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-200">
-            Log In
+            className={`w-full py-2 rounded-lg transition duration-200 ${loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
+            disabled={loading}>
+            {loading ? 'Logging In...' : 'Log In'}
           </button>
         </form>
       </div>
