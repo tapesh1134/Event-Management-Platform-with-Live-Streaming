@@ -1,6 +1,6 @@
-// Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
   const [loginData, setLoginData] = useState({
@@ -10,6 +10,7 @@ const Login = ({ onLogin }) => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -33,6 +34,7 @@ const Login = ({ onLogin }) => {
         alert('Login successful');
         onLogin(response.data.user);
         setLoading(false);
+        navigate('/');
       } catch (err) {
         setLoading(false);
         if (err.response && err.response.data) {
