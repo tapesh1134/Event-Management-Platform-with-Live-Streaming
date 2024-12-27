@@ -31,16 +31,24 @@ const Login = ({ onLogin }) => {
       setLoading(true);
       try {
         const response = await axios.post('http://localhost:5000/login', loginData);
-        alert('Login successful');
-        onLogin(response.data.user);
+        // If login is successful, store the token and redirect (or handle as needed)
+        alert('Login successful!');
+        setLoading(false);
+        onLogin(response.data.user);  // Pass the user data to the parent component
         setLoading(false);
         navigate('/');
       } catch (err) {
         setLoading(false);
         if (err.response && err.response.data) {
-          setErrors({ api: err.response.data.error });
+          if (err.response.data.error === 'User not found') {
+            alert('Invalid email or password. Please check your credentials and try again.');
+          } else if (err.response.data.error === 'Invalid password') {
+            alert('Invalid password. Please try again.');
+          } else {
+            alert('An unexpected error occurred. Please try again.');
+          }
         } else {
-          setErrors({ api: 'An unexpected error occurred' });
+          alert('An unexpected error occurred. Please try again.');
         }
       }
     }
