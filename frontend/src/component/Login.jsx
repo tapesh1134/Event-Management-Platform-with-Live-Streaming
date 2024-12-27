@@ -31,12 +31,10 @@ const Login = ({ onLogin }) => {
       setLoading(true);
       try {
         const response = await axios.post('http://localhost:5000/login', loginData);
-        // If login is successful, store the token and redirect (or handle as needed)
         alert('Login successful!');
-        setLoading(false);
+        console.log('User:', response.data.user); // For testing, log the user data
         onLogin(response.data.user);  // Pass the user data to the parent component
-        setLoading(false);
-        navigate('/');
+        navigate('/');  // Navigate to the home page
       } catch (err) {
         setLoading(false);
         if (err.response && err.response.data) {
@@ -53,6 +51,7 @@ const Login = ({ onLogin }) => {
       }
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
